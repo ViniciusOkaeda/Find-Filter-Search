@@ -1,22 +1,66 @@
-import './App.css';
+
+import { useEffect, useState } from "react";
+
 
 function App() {
+
+  const [ repos, setRepos] = useState([{
+    name: '',
+    description: ''
+  }]);
+
+  //const [ filteredRepos, setFilteredRepos] = useState([{name: '', description: ''}]);
+
+  const [ search, setSearch] = useState('');
+
+  const filteredRepos = search.length > 0 
+  ? repos.filter(repo => repo.name.includes(search))
+  : [];
+
+  console.log('Renderizado');
+
+  useEffect(() => {
+    fetch('https://api.github.com/users/ViniciusOkaeda/repos')
+      .then(response => response.json())
+      .then(data => setRepos(data))
+
+  }, [])
+
+//  useEffect(() => {
+  //  if(search.length) {
+    //  setFilteredRepos(repos.filter(repo => repo.name.includes(search)));
+    //}
+ // }, [search])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input 
+        name="search" 
+        type="text" 
+        placeholder='Digite sua busca aqui...'
+        onChange={ e => setSearch(e.target.value)}
+        value={search} />
+
+        { search.length > 0 ? (
+          <ul>
+          {filteredRepos.map(repo => {
+            return(
+              <li key={repo.name}>{repo.name}</li>
+            )
+          })}
+        </ul>
+        ) : (
+          <ul>
+          {repos.map(repo => {
+            return(
+              <li key={repo.name}>{repo.name}</li>
+            )
+          })}
+        </ul>
+        ) }
+
+
     </div>
   );
 }
